@@ -33,6 +33,7 @@ jobs:
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-5
           custom_instructions: |
             This is a UI generator project built with Next.js, Tailwind CSS, and Prisma (SQLite).
             The core feature is an AI-powered UI generator where users describe components and Claude generates React/JSX code.
