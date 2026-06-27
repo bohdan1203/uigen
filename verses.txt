@@ -1,0 +1,9 @@
+The code compiles at midnight,
+no warnings, no errors, no light.
+The tests all pass in silence —
+nobody knows if it's right.
+
+A function returns what it's given,
+a loop runs until it is done.
+The cursor blinks on an empty line,
+and somewhere, a bug has begun.
