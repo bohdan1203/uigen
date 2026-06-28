@@ -282,31 +282,52 @@ const ContactForm = () => {
 export default ContactForm;`;
 
       case "card":
-        return `import React from 'react';
+        return `import React, { useState } from 'react';
 
-const Card = ({ 
-  title = "Welcome to Our Service", 
-  description = "Discover amazing features and capabilities that will transform your experience.",
-  imageUrl,
-  actions 
+const StarRating = ({ rating = 4, count = 128 }) => (
+  <div className="flex items-center gap-1">
+    {[1,2,3,4,5].map(i => (
+      <span key={i} className={i <= rating ? "text-amber-400" : "text-gray-200"}>★</span>
+    ))}
+    <span className="text-xs text-gray-400 ml-1">({count})</span>
+  </div>
+);
+
+const Card = ({
+  title = "AeroStride Pro Running Shoes",
+  category = "Running",
+  description = "Engineered for peak performance with responsive cushioning and breathable mesh upper. Perfect for both road and trail.",
+  imageUrl = "https://picsum.photos/seed/shoes/400/300",
+  price = "$89.99",
+  originalPrice = "$129.99",
+  discount = "31% OFF",
+  rating = 4,
+  reviewCount = 248
 }) => {
+  const [added, setAdded] = useState(false);
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      {imageUrl && (
-        <img 
-          src={imageUrl} 
-          alt={title}
-          className="w-full h-48 object-cover"
-        />
-      )}
-      <div className="p-6">
-        <h3 className="text-xl font-semibold mb-2">{title}</h3>
-        <p className="text-gray-600 mb-4">{description}</p>
-        {actions && (
-          <div className="mt-4">
-            {actions}
-          </div>
-        )}
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 max-w-sm">
+      <div className="relative overflow-hidden rounded-t-2xl">
+        <img src={imageUrl} alt={title} className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300" />
+        <span className="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">{category}</span>
+      </div>
+      <div className="p-6 space-y-3">
+        <StarRating rating={rating} count={reviewCount} />
+        <h3 className="text-xl font-bold text-gray-900 leading-tight">{title}</h3>
+        <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{description}</p>
+        <div className="flex items-center gap-2 pt-1">
+          <span className="text-2xl font-bold text-gray-900">{price}</span>
+          <span className="text-sm line-through text-gray-400">{originalPrice}</span>
+          <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">{discount}</span>
+        </div>
+        <button
+          onClick={() => setAdded(true)}
+          className={\`w-full flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-semibold text-sm transition-all duration-200 \${added ? "bg-green-500 text-white" : "bg-indigo-600 hover:bg-indigo-700 text-white"}\`}
+        >
+          <span>{added ? "✓" : "🛒"}</span>
+          <span>{added ? "Added to Cart!" : "Add to Cart"}</span>
+        </button>
       </div>
     </div>
   );
@@ -392,18 +413,8 @@ export default Counter;`;
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-8">
-      <div className="w-full max-w-md">
-        <Card 
-          title="Amazing Product"
-          description="This is a fantastic product that will change your life. Experience the difference today!"
-          actions={
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-              Learn More
-            </button>
-          }
-        />
-      </div>
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-8">
+      <Card />
     </div>
   );
 }`;
