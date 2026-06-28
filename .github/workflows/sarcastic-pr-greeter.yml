@@ -1,0 +1,51 @@
+name: Sarcastic PR Greeter
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  roast:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Generate sarcastic comment via Claude
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d "{
+              \"model\": \"claude-haiku-4-5-20251001\",
+              \"max_tokens\": 300,
+              \"messages\": [{
+                \"role\": \"user\",
+                \"content\": \"A GitHub user named '$PR_AUTHOR' just opened a pull request titled '$PR_TITLE'. Write a single short sarcastic comment welcoming their contribution. Be dramatic, mock their audacity for contributing, act like it's a huge inconvenience. Keep it fun and clearly joking — not mean. 2-3 sentences max. Use emojis sarcastically — like clapping 👏 when you're clearly not impressed, or 🎉 for something utterly underwhelming. No quotes around the output.\"
+              }]
+            }")
+
+          # Extract the text content from the response
+          COMMENT=$(echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          print(data['content'][0]['text'])
+          ")
+
+          # Save to file to avoid quoting issues
+          echo "$COMMENT" > /tmp/comment.txt
+
+      - name: Post comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          COMMENT=$(cat /tmp/comment.txt)
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$COMMENT"
